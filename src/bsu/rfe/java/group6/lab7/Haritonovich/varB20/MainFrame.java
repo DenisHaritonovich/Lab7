@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,6 +13,9 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -59,6 +64,18 @@ public class MainFrame extends JFrame {
         final JScrollPane scrollPaneOutgoing =
                 new JScrollPane(textAreaOutgoing);
         final JPanel messagePanel = new JPanel();
+        textAreaOutgoing.addKeyListener(new KeyListener() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                boolean controlDown = e.isControlDown();
+                if(controlDown&&e.getKeyCode()==KeyEvent.VK_ENTER)
+                    sendMessage();
+            }
+            @Override
+            public void keyTyped(KeyEvent e) {/*NOP*/}
+            @Override
+            public void keyPressed(KeyEvent e) {/*NOP*/}
+        });
         messagePanel.setBorder(
                 BorderFactory.createTitledBorder("Сообщение"));
         final JButton sendButton = new JButton("Отправить");
@@ -128,7 +145,9 @@ public class MainFrame extends JFrame {
                                         .getRemoteSocketAddress())
                                         .getAddress()
                                         .getHostAddress();
-                        textAreaIncoming.append(senderName +
+                        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                        Date date = new Date();
+                        textAreaIncoming.append(dateFormat.format(date)+" "+senderName +
                                 " (" + address + "): " +
                                 message + "\n");
                     }
